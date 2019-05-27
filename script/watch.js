@@ -4,32 +4,22 @@
 const blocklist = ['韓國瑜', '韓市長', '韓總', '國瑜', '韓流', '韓粉', '韓導']
 const templateHtml = '<div><h1 style="padding: 30px; text-align: center;">草包已被隱藏！</h1></div>'
 
-const contentFromPosts = document.querySelector('#contentArea')
-const contentFromPages = document.querySelector('#pagelet_timeline_main_column')
-const content = contentFromPosts || contentFromPages
+const content = document.querySelector('#contentArea, #pagelet_timeline_main_column')
+
+function hasSensitiveWordInBlocklist (article) {
+  return blocklist.some((sensitiveWord) => article.innerHTML.includes(sensitiveWord))
+}
 
 function removeElems () {
   const articles = content.querySelectorAll(`div[id][role="article"]`)
 
-  function hasSensitiveWordInBlocklist (article) {
-    return blocklist.some((sensitiveWord) => article.innerHTML.includes(sensitiveWord))
-  }
-
-  articles.forEach(function (article) {
-    if (hasSensitiveWordInBlocklist(article)) {
-      article.innerHTML = templateHtml
-    }
+  articles.filter(hasSensitiveWordInBlocklist).forEach(function (article) {
+    article.innerHTML = templateHtml
   })
 }
 
-content.addEventListener('DOMContentLoaded', function (event) {
-  removeElems()
-})
+content.addEventListener('DOMContentLoaded', removeElems)
 
-content.addEventListener('DOMNodeInserted', function (event) {
-  removeElems()
-})
+content.addEventListener('DOMNodeInserted', removeElems)
 
-content.addEventListener('DOMSubtreeModified', function (event) {
-  removeElems()
-})
+content.addEventListener('DOMSubtreeModified', removeElems)
